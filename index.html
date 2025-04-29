@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Countdown for Chinnu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff3e6c;
+            --secondary: #ffc2d1;
+            --accent: #ff85a1;
+            --light: #fff9fb;
+            --dark: #2d3436;
+            --gold: #ffd700;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #ffebf3, #fff9fb);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Animated background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+        
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            transform: rotate(45deg);
+            opacity: 0;
+            animation: float-up 15s linear infinite;
+        }
+        
+        .heart:before,
+        .heart:after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: inherit;
+            border-radius: 50%;
+        }
+        
+        .heart:before {
+            top: -10px;
+            left: 0;
+        }
+        
+        .heart:after {
+            top: 0;
+            left: -10px;
+        }
+        
+        .floating-circles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.2;
+            filter: blur(5px);
+            animation: float-diagonal 20s linear infinite;
+        }
+        
+        /* Main content container */
+        .container {
+            max-width: 1200px;
+            text-align: center;
+            padding: 20px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .advance-msg {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            animation: pulse 2s infinite alternate;
+        }
+        
+        /* Countdown section */
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .countdown-box {
+            width: 120px;
+            height: 120px;
+            margin: 0 15px 15px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        .countdown-box:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+        }
+        
+        .count-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .count-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--dark);
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        /* Cake styling */
+        .cake-container {
+            width: 300px;
+            height: 250px;
+            margin: 40px auto;
+            position: relative;
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .cake {
+            position: relative;
+            width: 250px;
+            height: 200px;
+            margin: 0 auto;
+        }
+        
+        .cake-plate {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 270px;
+            height: 20px;
+            background: linear-gradient(to right, #e0e0e0, #f5f5f5, #e0e0e0);
+            border-radius: 50%;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cake-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 80px;
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+            border-radius: 10px 10px 5px 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cake-middle {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 170px;
+            height: 70px;
+            background: linear-gradient(to right, #fff, var(--secondary));
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .cake-top {
+            position: absolute;
+            bottom: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 50px;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            border-radius: 5px 5px 0 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Frosting */
+        .frosting {
+            position: absolute;
+            width: 20px;
+            height: 15px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        .frosting1 { bottom: 150px; left: calc(50% - 50px); }
+        .frosting2 { bottom: 150px; left: calc(50% - 30px); }
+        .frosting3 { bottom: 150px; left: calc(50% - 10px); }
+        .frosting4 { bottom: 150px; left: calc(50% + 10px); }
+        .frosting5 { bottom: 150px; left: calc(50% + 30px); }
+        
+        /* Photo frames */
+        .photo-frames {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .photo-frame {
+            width: 220px;
+            height: 250px;
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            transform: rotate(-5deg);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .photo-frame:nth-child(even) {
+            transform: rotate(5deg);
+        }
+        
+        .photo-frame:hover {
+            transform: rotate(0) scale(1.05);
+            z-index: 5;
+        }
+        
+        .photo-frame img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .photo-frame .frame-caption {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--dark);
+            font-family: 'Dancing Script', cursive;
+            font-weight: 700;
+        }
+        
+        /* Enter button */
+        .enter-btn {
+            margin-top: 30px;
+            padding: 15px 40px;
+            border: none;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 62, 108, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+        
+        .enter-btn.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+            animation: pulse 1.5s infinite alternate;
+        }
+        
+        .enter-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(255, 62, 108, 0.4);
+        }
+        
+        /* Loading overlay for transition */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--light);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .loader {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+        
+        .loader:before {
+            content: '';
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 5px solid var(--secondary);
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            position: absolute;
+        }
+        
+        /* Impatient button & popup styles */
+        .impatient-text {
+            margin-top: 15px;
+            font-size: 1rem;
+            color: var(--accent);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .impatient-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 25px;
+            border: 2px dashed var(--accent);
+            background: transparent;
+            color: var(--accent);
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .impatient-btn:hover {
+            background: rgba(255, 133, 161, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s ease;
+        }
+        
+        .popup-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .popup-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 90%;
+            width: 500px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transform: scale(0.8);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        
+        .popup-overlay.active .popup-content {
+            transform: scale(1);
+        }
+        
+        .popup-emoji {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite alternate;
+        }
+        
+        .popup-text {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .popup-subtext {
+            font-size: 1rem;
+            color: var(--dark);
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+        
+        .popup-close {
+            display: inline-block;
+            padding: 10px 30px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 5px 15px rgba(255, 62, 108, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .popup-close:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 62, 108, 0.4);
+        }
+        
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-15px); }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) rotate(45deg) scale(0.5);
+                opacity: 0.2;
+            }
+            20% {
+                opacity: 0.8;
+            }
+            80% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100px) rotate(45deg) scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes float-diagonal {
+            0% {
+                transform: translate(-100px, 100vh) scale(0.5);
+                opacity: 0.2;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translate(100vw, -100px) scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .advance-msg {
+                font-size: 2.5rem;
+            }
+            
+            .countdown-box {
+                width: 90px;
+                height: 90px;
+                margin: 0 8px 15px;
+            }
+            
+            .count-number {
+                font-size: 2rem;
+            }
+            
+            .count-label {
+                font-size: 0.8rem;
+            }
+            
+            .cake-container {
+                transform: scale(0.8);
+                margin: 0 auto;
+            }
+            
+            .photo-frame {
+                width: 150px;
+                height: 200px;
+            }
+            
+            .photo-frame img {
+                height: 150px;
+            }
+            
+            .popup-emoji {
+                font-size: 4rem;
+            }
+            
+            .popup-text {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background animations -->
+    <div class="animated-bg">
+        <div class="floating-hearts" id="hearts-container"></div>
+        <div class="floating-circles" id="circles-container"></div>
+    </div>
+    
+    <div class="container">
+        <h1 class="advance-msg">Advance Happy Birthday, Chinnu!</h1>
+        
+        <!-- Countdown timer -->
+        <div class="countdown-container">
+            <div class="countdown-box">
+                <div class="count-number" id="days">00</div>
+                <div class="count-label">Days</div>
+            </div>
+            <div class="countdown-box">
+                <div class="count-number" id="hours">00</div>
+                <div class="count-label">Hours</div>
+            </div>
+            <div class="countdown-box">
+                <div class="count-number" id="minutes">00</div>
+                <div class="count-label">Minutes</div>
+            </div>
+            <div class="countdown-box">
+                <div class="count-number" id="seconds">00</div>
+                <div class="count-label">Seconds</div>
+            </div>
+        </div>
+        
+        <!-- Cake without candles -->
+        <div class="cake-container">
+            <div class="cake">
+                <div class="cake-plate"></div>
+                <div class="cake-bottom"></div>
+                <div class="cake-middle"></div>
+                <div class="cake-top"></div>
+                
+                <!-- Frosting decoration -->
+                <div class="frosting frosting1"></div>
+                <div class="frosting frosting2"></div>
+                <div class="frosting frosting3"></div>
+                <div class="frosting frosting4"></div>
+                <div class="frosting frosting5"></div>
+            </div>
+        </div>
+        
+        <!-- Photo frames -->
+        <div class="photo-frames">
+            <div class="photo-frame">
+                <img src="cs1.jpg" alt="Chinnu">
+                <div class="frame-caption">Sister's smile is priceless ❤️</div>
+            </div>
+            <div class="photo-frame">
+                <img src="cel.jpg" alt="Chinnu">
+                <div class="frame-caption">Counting days for celebration 🎉</div>
+            </div>
+        </div>
+        
+        <!-- Enter button (hidden initially) -->
+        <button class="enter-btn" id="enter-btn">Enter Birthday Page</button>
+        
+        <!-- Impatient section for those who can't wait -->
+        <div class="impatient-text">Can't wait for the countdown? Want a sneak peek of the surprise?</div>
+        <button class="impatient-btn" id="impatient-btn">Show me the wishes now!</button>
+    </div>
+    
+    <!-- Loading overlay for transition -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loader"></div>
+    </div>
+    
+    <!-- Popup for impatient clicks -->
+    <div class="popup-overlay" id="popup-overlay">
+        <div class="popup-content">
+            <div class="popup-emoji">😜</div>
+            <div class="popup-text">Oops! You've been fooled!</div>
+            <div class="popup-subtext">Nice try, but the real surprise is worth waiting for! I'm working on something special for your birthday. No sneak peeks allowed! The best things come to those who wait...</div>
+            <button class="popup-close" id="popup-close">Fine, I'll wait!</button>
+        </div>
+    </div>
+    
+    <script>
+        // Set the birthday date - May 6, 2025
+        const birthdayDate = new Date("May 6, 2025 00:00:00").getTime();
+        
+        // Create animated background elements
+        function createBackgroundElements() {
+            const heartsContainer = document.getElementById('hearts-container');
+            const circlesContainer = document.getElementById('circles-container');
+            
+            // Create hearts
+            for (let i = 0; i < 20; i++) {
+                createHeart(heartsContainer);
+            }
+            
+            // Create circles
+            for (let i = 0; i < 15; i++) {
+                createCircle(circlesContainer);
+            }
+            
+            // Continue creating elements periodically
+            setInterval(() => {
+                createHeart(heartsContainer);
+                if (Math.random() > 0.5) createCircle(circlesContainer);
+            }, 3000);
+        }
+        
+        function createHeart(container) {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            
+            // Random properties
+            const size = 10 + Math.random() * 20;
+            const left = Math.random() * 100;
+            const animationDuration = 10 + Math.random() * 15;
+            const delay = Math.random() * 5;
+            const opacity = 0.2 + Math.random() * 0.4;
+            
+            heart.style.width = `${size}px`;
+            heart.style.height = `${size}px`;
+            heart.style.left = `${left}%`;
+            heart.style.bottom = `-50px`;
+            heart.style.opacity = opacity;
+            heart.style.animationDuration = `${animationDuration}s`;
+            heart.style.animationDelay = `${delay}s`;
+            
+            // Adjust pseudo-elements size
+            heart.style.setProperty('--heart-size', `${size}px`);
+            
+            container.appendChild(heart);
+            
+            // Clean up after animation
+            setTimeout(() => {
+                heart.remove();
+            }, (animationDuration + delay) * 1000);
+        }
+        
+        function createCircle(container) {
+            const circle = document.createElement('div');
+            circle.classList.add('circle');
+            
+            // Random properties
+            const size = 50 + Math.random() * 150;
+            const color = getRandomPastelColor();
+            const left = Math.random() * 100;
+            const bottom = Math.random() * 100;
+            const animationDuration = 15 + Math.random() * 20;
+            const delay = Math.random() * 5;
+            
+            circle.style.width = `${size}px`;
+            circle.style.height = `${size}px`;
+            circle.style.background = color;
+            circle.style.left = `${left}%`;
+            circle.style.bottom = `${bottom}%`;
+            circle.style.animationDuration = `${animationDuration}s`;
+            circle.style.animationDelay = `${delay}s`;
+            
+            container.appendChild(circle);
+            
+            // Clean up after animation
+            setTimeout(() => {
+                circle.remove();
+            }, (animationDuration + delay) * 1000);
+        }
+        
+        function getRandomPastelColor() {
+            // Generate pastel colors in the pink/purple family
+            const hue = 300 + Math.random() * 60; // Pink to purple
+            const saturation = 70 + Math.random() * 30;
+            const lightness = 75 + Math.random() * 15;
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        }
+        
+        // Update countdown timer
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = birthdayDate - now;
+            
+            // Time calculations
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            // Display results
+            document.getElementById("days").textContent = days.toString().padStart(2, '0');
+            document.getElementById("hours").textContent = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").textContent = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").textContent = seconds.toString().padStart(2, '0');
+            
+            // If countdown is finished
+            if (distance <= 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("days").textContent = "00";
+                document.getElementById("hours").textContent = "00";
+                document.getElementById("minutes").textContent = "00";
+                document.getElementById("seconds").textContent = "00";
+                
+                // Show the enter button
+                document.getElementById("enter-btn").classList.add("active");
+            }
+        }
+        
+        // Handle impatient button click
+        function handleImpatientClick() {
+            // Show popup with funny message
+            document.getElementById('popup-overlay').classList.add('active');
+            
+            // Different emojis for variety
+            const emojis = ['😜', '😂', '🤭', '😆', '🤪'];
+            document.querySelector('.popup-emoji').textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        }
+        
+        // Close popup
+        function closePopup() {
+            document.getElementById('popup-overlay').classList.remove('active');
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            createBackgroundElements();
+            updateCountdown();
+            
+            // Start countdown
+            window.countdownInterval = setInterval(updateCountdown, 1000);
+            
+            // Add event listeners
+            document.getElementById('impatient-btn').addEventListener('click', handleImpatientClick);
+            document.getElementById('popup-close').addEventListener('click', closePopup);
+            
+            // Handle enter button click (when countdown finishes)
+            document.getElementById("enter-btn").addEventListener('click', function() {
+                const loadingOverlay = document.getElementById("loading-overlay");
+                loadingOverlay.classList.add("active");
+                
+                // Redirect to main birthday page after loading animation
+                setTimeout(() => {
+                    window.location.href = "home.html";  // Change to your main page URL
+                }, 2000);
+            });
+        });
+        
+        // For development testing - press spacebar to show enter button
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                document.getElementById("enter-btn").classList.add("active");
+            }
+        });
+    </script>
+</body>
+</html>
